@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^4.3.0",
     "@astrojs/ts-plugin": "^1.10.4",
     "astro": "^5.12.9",
     "three": "^0.179.1"

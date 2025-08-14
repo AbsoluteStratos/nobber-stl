@@ -28,6 +28,7 @@ const ambientLight = new THREE.AmbientLight(0x404040, 100);
 scene.add(ambientLight);
 
 const loader = new FBXLoader();
+let loadedObject = null;
 loader.load(
     'chibi.fbx',
     (object) => {
@@ -37,6 +38,7 @@ loader.load(
         const center = box.getCenter(new THREE.Vector3());
         object.position.sub(center);
         scene.add(object);
+        loadedObject=object;
     },
     (xhr) => {
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
@@ -89,30 +91,54 @@ colors.forEach((color, i) => {
     });
 });
 
-// Animate in your render loop
+// --- MENU CHECKBOX LOGIC ---
+const menuOpt1 = document.querySelector('#menu-opt1');
+const menuOpt2 = document.querySelector('#menu-opt2');
+function updateLightsState() {
+    const lightsOn = menuOpt1?.checked;
+    orbitLights.forEach(({ light }) => {
+        light.visible = !!lightsOn;
+    });
+}
+function updateRotationState(delta) {
+    if (menuOpt2?.checked && loadedObject) {
+        loadedObject.rotation.y += 0.2 * delta; // slow rotation
+    }
+}
+
+// Attach listeners to update immediately on change
+menuOpt1?.addEventListener('change', updateLightsState);
+
+// Initialize light state based on default checkbox state
+updateLightsState();
+
+// --- ANIMATION ---
 function animateLights(delta) {
     orbitLights.forEach(l => {
         l.angle += l.speed * delta;
         l.light.position.set(
             Math.cos(l.angle) * l.radius,
-            Math.sin(l.angle * 0.7) * 2, // add a vertical wobble
+            Math.sin(l.angle * 0.7) * 2,
             Math.sin(l.angle) * l.radius
         );
     });
 }
 
 function render() {
-    renderer.render(scene, camera)
+    renderer.render(scene, camera);
 }
 
 const clock = new THREE.Clock();
 function animate() {
-    requestAnimationFrame(animate)
-    controls.update()
+    requestAnimationFrame(animate);
+    controls.update();
     const delta = clock.getDelta();
+
     animateLights(delta);
-    render()
-    stats.update()
+    updateRotationState(delta);
+
+    render();
+    stats.update();
 }
 
 export default animate;

@@ -1,0 +1,106 @@
+---
+const options = [
+  { id: "menu-opt1", label: "Color Lights", default: true },
+  { id: "menu-opt2", label: "Rotate", default: false },
+];
+
+---
+
+<style>
+.menu-container {
+  position: fixed;
+  bottom: 1rem;
+  left: 10px;
+  background-color: rgba(255, 182, 193, 0.9);
+  border: 2px solid white;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 300px;
+  font-family: sans-serif;
+  color: white;
+  z-index: 3;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: salmon;
+  padding: 0 1rem;
+  height: 2rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.menu-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  
+  background-color: rgba(255, 182, 193, 0.9);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.menu-body.open {
+    max-height: 300px;
+    opacity: 1;
+}
+
+.menu-body-padding{
+    padding: 10px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-container input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"]:checked {
+  background-color: white;
+}
+</style>
+
+<div id="popup-menu" class="menu-container">
+  <div class="menu-header" data-role="toggle">
+    <span>Options</span>
+    <span id="arrow">▲</span>
+  </div>
+  <div class="menu-body">
+    <div class="menu-body-padding">
+        {options.map(opt => (
+        <label class="checkbox-container">
+            <input type="checkbox" id={opt.id} checked={opt.default ? true : undefined}/>
+            {opt.label}
+        </label>
+        ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  const menu = document.getElementById("popup-menu");
+  const body = menu.querySelector(".menu-body");
+  const arrow = document.getElementById("arrow");
+
+  // Create global state object
+  window.PopupMenuState = { isOpen: false };
+
+  menu.querySelector('[data-role="toggle"]').addEventListener("click", () => {
+    window.PopupMenuState.isOpen = !window.PopupMenuState.isOpen;
+    body.classList.toggle("open", window.PopupMenuState.isOpen);
+    arrow.textContent = window.PopupMenuState.isOpen ? "▼" : "▲";
+  });
+</script>
